@@ -1,11 +1,12 @@
 <template>
     <div id="builder">
         <input type="text" v-model="text" class="builder-input">
-        <input type="button" value="Add Male" v-on:click="onAddMale()" class="builder-button">
-        <input type="button" value="Add Female" v-on:click="onAddFemale()" class="builder-button">
-        <input type="button" value="Add Pause" v-on:click="onAddPause()" class="builder-button">
-        <input type="button" value="Play" v-on:click="onPlay()" class="builder-button">
-
+        <div>
+            <input type="button" value="Add Male" v-on:click="onAddMale()" class="builder-button">
+            <input type="button" value="Add Female" v-on:click="onAddFemale()" class="builder-button">
+            <input type="button" value="Add Pause" v-on:click="onAddPause()" class="builder-button">
+            <input type="button" value="Play" v-on:click="onPlay([...list])" class="builder-button">
+        </div>
         <ul class="builder-list">
             <li v-for="(m, index) in list" :key="m.id" class="builder-item"> {{ (m.pause) ? `Pause: ${m.timeout}ms` : `${m.voice}: ${m.text}` }} 
                 <span class="cancel-button" v-on:click="onDelete(index)">
@@ -13,6 +14,7 @@
                 </span>
             </li>
         </ul>
+        
     </div>
 </template>
 
@@ -51,18 +53,18 @@ export default {
             }
             this.text = ''
         },
-        onPlay () {
-            if (this.list.length <= 0) {
+        onPlay (list) {
+            if (list.length <= 0) {
                 return
             }
             if (this.list[0].pause) {
-                const l = this.list.shift()
+                const l = list.shift()
                 setTimeout(() => this.onPlay(), l.timeout)
                 return
             }
-            const voice = (this.list[0].voice === 'male') ? 'Polish Male' : 'Polish Female'
-            responsiveVoice.speak(this.list.shift().text, voice, {onend: () => {
-                this.onPlay()
+            const voice = (list[0].voice === 'male') ? 'Polish Male' : 'Polish Female'
+            responsiveVoice.speak(list.shift().text, voice, {onend: () => {
+                this.onPlay(list)
             }})
         },
         onDelete (index) {
@@ -72,7 +74,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+#builder {
+    display: flex;
+    flex-direction: column;
+}
 .builder-input {
     font-family: 'Roboto', sans-serif;
     display: block;
@@ -103,17 +109,24 @@ export default {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
-    background-color: #334a66;
+    
+    overflow:hidden;
+    overflow-y:auto;
 }
 
 .builder-item {
     display: block;
     color: white;
     padding: 14px 16px;
+    margin-top: 4px;
     text-decoration: none;
+    background-color: #334a66;
 }
 .cancel-button {
     float: right;
+}
+
+::-webkit-scrollbar {
+    display: none;
 }
 </style>

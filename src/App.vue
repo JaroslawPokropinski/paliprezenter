@@ -24,7 +24,7 @@ html, body {
 
 #app {
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   flex-direction: column;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
